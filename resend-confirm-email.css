@@ -1,0 +1,189 @@
+/* ============================================================
+   STREAK — Resend email confirmation CSS
+   Notion-inspired, email-client friendly
+   ============================================================ */
+
+@media screen and (max-width: 620px) {
+  .email-shell {
+    width: 100% !important;
+  }
+
+  .email-card {
+    width: 100% !important;
+    border-radius: 8px !important;
+  }
+
+  .email-padding {
+    padding: 28px 20px !important;
+  }
+
+  .email-title {
+    font-size: 24px !important;
+    line-height: 32px !important;
+  }
+
+  .email-copy {
+    font-size: 15px !important;
+    line-height: 24px !important;
+  }
+
+  .email-button {
+    display: block !important;
+    width: 100% !important;
+  }
+}
+
+.email-body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  background-color: #FFFFFF;
+  color: #1A1A1A;
+  font-family: Inter, Tajawal, Arial, sans-serif;
+}
+
+.email-page {
+  width: 100%;
+  background-color: #F7F7F5;
+  padding: 40px 12px;
+}
+
+.email-shell {
+  width: 600px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.email-card {
+  width: 600px;
+  max-width: 600px;
+  background-color: #FFFFFF;
+  border: 1px solid #E3E2DE;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.email-padding {
+  padding: 40px;
+}
+
+.email-wordmark {
+  margin: 0;
+  color: #1A1A1A;
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-align: center;
+}
+
+.email-tagline {
+  margin: 6px 0 28px;
+  color: #6B6B6B;
+  font-size: 14px;
+  line-height: 22px;
+  text-align: center;
+}
+
+.email-icon-wrap {
+  padding: 0 0 18px;
+  text-align: center;
+}
+
+.email-icon {
+  width: 44px;
+  height: 44px;
+  margin: 0 auto;
+  border-radius: 8px;
+  background-color: #EEF8F6;
+  border: 1px solid #D8EDE9;
+  color: #0F7B6C;
+  font-size: 22px;
+  line-height: 44px;
+  text-align: center;
+}
+
+.email-panel {
+  background-color: #F7F7F5;
+  border: 1px solid #E3E2DE;
+  border-radius: 8px;
+  padding: 28px 24px;
+  text-align: center;
+}
+
+.email-title {
+  margin: 0 0 12px;
+  color: #1A1A1A;
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.email-copy {
+  margin: 0;
+  color: #6B6B6B;
+  font-size: 16px;
+  line-height: 27px;
+  font-weight: 400;
+}
+
+.email-button-row {
+  padding: 28px 0 18px;
+  text-align: center;
+}
+
+.email-button {
+  display: inline-block;
+  min-width: 230px;
+  padding: 13px 22px;
+  border-radius: 6px;
+  background-color: #2B2B2B;
+  color: #FFFFFF !important;
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+}
+
+.email-note {
+  margin: 0;
+  color: #A0A0A0;
+  font-size: 13px;
+  line-height: 22px;
+  text-align: center;
+}
+
+.email-link {
+  color: #0F7B6C !important;
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.email-divider {
+  height: 1px;
+  line-height: 1px;
+  background-color: #E3E2DE;
+  margin: 28px 0 20px;
+}
+
+.email-footer {
+  padding: 22px 6px 0;
+  color: #A0A0A0;
+  font-size: 12px;
+  line-height: 20px;
+  text-align: center;
+}
+
+.email-footer a {
+  color: #0F7B6C;
+  text-decoration: none;
+}
+
+[dir="rtl"] .email-body,
+[dir="rtl"] .email-page,
+[dir="rtl"] .email-card {
+  font-family: Tajawal, Arial, sans-serif;
+}

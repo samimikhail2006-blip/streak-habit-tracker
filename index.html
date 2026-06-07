@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Minimal habit tracker — build streaks, stay consistent." />
+  <title>Streak — Habit Tracker</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Supabase CDN -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+
+</head>
+
+<body>
+  <!-- ─────────────────────────────────────────
+         TOAST NOTIFICATION CONTAINER
+    ───────────────────────────────────────── -->
+  <div id="toast-container" class="toast-container" role="region" aria-label="Notifications" aria-live="polite"
+    aria-atomic="false"></div>
+
+  <!-- ─────────────────────────────────────────
+         ROOT APP WRAPPER
+    ───────────────────────────────────────── -->
+  <div id="app" class="app">
+
+    <!-- ───────────────────────────────────────
+           AUTH SECTION  (login / register)
+      ─────────────────────────────────────── -->
+    <section id="auth-section" class="auth-section" aria-labelledby="auth-heading" hidden style="display:none">
+      <div class="auth-card">
+
+
+        <!-- Wordmark -->
+        <header class="auth-header">
+          <span class="wordmark" aria-label="Streak">Streak</span>
+          <p class="auth-tagline">Build habits. Keep streaks.</p>
+        </header>
+
+        <!-- Tab switcher -->
+        <div class="auth-tabs" role="tablist" aria-label="Authentication mode">
+          <button id="tab-login" class="auth-tab auth-tab--active" role="tab" aria-selected="true"
+            aria-controls="panel-login" data-tab="login" type="button">
+            Sign in
+          </button>
+          <button id="tab-register" class="auth-tab" role="tab" aria-selected="false" aria-controls="panel-register"
+            data-tab="register" type="button">
+            Create account
+          </button>
+        </div>
+
+        <!-- Login panel -->
+        <div id="panel-login" class="auth-panel" role="tabpanel" aria-labelledby="tab-login">
+          <h1 id="auth-heading" class="sr-only">Sign in to Streak</h1>
+
+          <div class="form-group">
+            <label class="form-label" for="email">Email</label>
+            <input id="email" class="form-input" type="email" placeholder="you@example.com" autocomplete="email"
+              required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="password">Password</label>
+            <div class="password-field">
+              <input id="password" class="form-input" type="password" placeholder="••••••••"
+                autocomplete="current-password" required />
+              <button class="password-toggle" type="button" data-password-toggle="password" aria-label="Show password">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="eye-icon eye-icon--show">
+                  <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="eye-icon eye-icon--hide" style="display:none;">
+                  <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
+                  <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" />
+                  <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" />
+                  <line x1="2" y1="2" x2="22" y2="22" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <button id="login-btn" class="btn btn--primary btn--full" type="button">
+            Sign in
+          </button>
+
+          <p class="auth-footnote">
+            Forgot your password?
+            <button class="link-btn" id="btn-forgot" type="button">Reset it</button>
+          </p>
+        </div>
+
+        <!-- Register panel -->
+        <div id="panel-register" class="auth-panel auth-panel--hidden" role="tabpanel" aria-labelledby="tab-register"
+          hidden>
+          <h1 class="sr-only">Create a Streak account</h1>
+
+          <div class="register-name-row">
+            <div class="form-group">
+              <label class="form-label" for="register-first-name" id="label-register-first-name">First name</label>
+              <input id="register-first-name" class="form-input" type="text" placeholder="Jane" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="register-last-name" id="label-register-last-name">Last name</label>
+              <input id="register-last-name" class="form-input" type="text" placeholder="Smith" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="register-email">Email</label>
+            <input id="register-email" class="form-input" type="email" placeholder="you@example.com"
+              autocomplete="email" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="register-password">Password</label>
+            <div class="password-field">
+              <input id="register-password" class="form-input" type="password" placeholder="Min. 8 characters"
+                autocomplete="new-password" minlength="8" required />
+              <button class="password-toggle" type="button" data-password-toggle="register-password"
+                aria-label="Show password">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="eye-icon eye-icon--show">
+                  <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="eye-icon eye-icon--hide" style="display:none;">
+                  <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
+                  <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" />
+                  <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" />
+                  <line x1="2" y1="2" x2="22" y2="22" />
+                </svg>
+              </button>
+            </div>
+            <div id="register-password-strength" class="password-strength" aria-live="polite" style="display:none;">
+            </div>
+          </div>
+
+          <button id="register-btn" class="btn btn--primary btn--full" type="button">
+            Create account
+          </button>
+
+          <p class="auth-footnote">
+            By signing up you agree to our
+            <a href="#" class="link">Terms</a> &amp;
+            <a href="#" class="link">Privacy Policy</a>.
+          </p>
+        </div>
+
+        <!-- Verify panel -->
+        <div id="panel-verify" class="auth-panel auth-panel--hidden" role="tabpanel" aria-labelledby="tab-register"
+          hidden>
+          <div class="verify-link-card">
+            <div class="verify-link-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="20" height="16" x="2" y="4" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+              </svg>
+            </div>
+            <h2 id="verify-heading" class="verify-link-title">Verify your email</h2>
+            <p id="verify-subtitle" class="verify-link-desc"></p>
+
+            <button id="open-email-btn" class="btn btn--primary btn--full" type="button">Open Email</button>
+
+            <p class="auth-footnote" style="margin-top: 8px;">
+              <button class="link-btn" id="resend-otp-btn" type="button">Resend link</button>
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ───────────────────────────────────────
+           DASHBOARD SECTION
+      ─────────────────────────────────────── -->
+    <div id="app-section" class="dashboard" hidden style="display:none">
+
+      <!-- ── Top navigation bar ── -->
+      <header class="topbar" role="banner">
+        <div class="topbar__inner container">
+
+          <div class="topbar__brand">
+            <a href="#" class="wordmark topbar__wordmark" aria-label="Streak home">
+              Streak
+            </a>
+            <button id="lang-toggle" class="btn btn--ghost btn--sm theme-toggle-btn" type="button"
+              aria-label="Toggle language">العربية</button>
+          </div>
+
+          <nav class="topbar__nav" aria-label="Main navigation">
+            <span id="user-email" class="topbar__greeting" aria-live="polite" style="display: none;"></span>
+
+            <!-- Topbar Redesign: Avatar button -->
+            <button id="topbar-avatar" class="topbar-avatar-btn" type="button" aria-label="Profile menu">
+              <!-- Rendered dynamically by JS -->
+            </button>
+
+
+            <button id="theme-toggle-btn" class="btn btn--ghost btn--sm theme-toggle-btn" type="button"
+              aria-label="Toggle dark mode" title="Toggle dark mode">
+              🌙
+            </button>
+
+            <!-- Topbar Redesign: Logout icon button -->
+            <button id="topbar-logout-btn" class="topbar-icon-btn topbar-icon-btn--danger" type="button"
+              aria-label="Sign out">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" x2="9" y1="12" y2="12" />
+              </svg>
+            </button>
+          </nav>
+
+        </div>
+      </header>
+
+      <main class="main container" id="main-content" tabindex="-1">
+
+        <!-- ── Page heading ── -->
+        <section class="page-hero" aria-labelledby="dashboard-heading">
+          <h2 id="dashboard-heading" class="page-title">My Habits</h2>
+          <p class="page-subtitle">Track what matters. Show up every day.</p>
+        </section>
+
+        <!-- ── Add habit form ── -->
+        <section class="add-habit-section card" aria-labelledby="add-habit-heading">
+          <h3 id="add-habit-heading" class="card__title">Add a new habit</h3>
+
+          <div class="habit-form" role="form" aria-label="New habit form">
+
+            <div class="habit-form__row">
+
+              <div class="form-group habit-form__name">
+                <label class="form-label" for="habit-input">Habit name</label>
+                <input id="habit-input" class="form-input" type="text" placeholder="e.g. Morning run" maxlength="80"
+                  required aria-required="true" />
+              </div>
+
+            </div>
+
+
+
+            <div class="habit-form__actions">
+              <button id="add-habit-btn" class="btn btn--primary" type="button">
+                Add habit
+              </button>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ── Stats bar ── -->
+        <section class="stats-bar" aria-label="Summary statistics">
+          <div class="stat-chip">
+            <span class="stat-chip__value" id="stat-total">0</span>
+            <span class="stat-chip__label">Total habits</span>
+          </div>
+        </section>
+
+        <!-- ── Filter / search bar ── -->
+        <div class="habits-toolbar" role="search">
+          <label class="sr-only" for="habit-search">Search habits</label>
+          <input id="habit-search" class="form-input habits-toolbar__search" type="search" placeholder="Search habits…"
+            aria-label="Search habits" />
+
+        </div>
+
+        <!-- ── Habit cards container ── -->
+        <section id="habit-list" class="habit-grid" aria-label="Habit list" aria-live="polite">
+        </section>
+
+        <!-- ── Empty state ── -->
+        <div id="empty-state" class="empty-state" role="status" aria-live="polite" hidden>
+          <div class="empty-state__icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 19V5" />
+              <path d="M5 12h14" />
+            </svg>
+          </div>
+          <h3 class="empty-state__heading">No habits yet</h3>
+          <p class="empty-state__body">
+            Add your first habit above and start building your streak today.
+          </p>
+          <button class="btn btn--primary" type="button" id="btn-empty-cta"
+            aria-label="Scroll up to add your first habit">
+            Add your first habit
+          </button>
+        </div>
+
+        <!-- ── Loading spinner ── -->
+        <div id="spinner" class="hidden" aria-hidden="true"></div>
+
+      </main>
+
+      <!-- ── Footer ── -->
+      <footer class="footer" role="contentinfo">
+        <div class="container footer__inner">
+          <p class="footer__copy">
+            &copy; <span id="footer-year"></span> Streak. All rights reserved.
+            <span class="footer__email">sami.mikhail.2006@gmail.com</span>
+          </p>
+          <nav class="footer__links" aria-label="Footer navigation">
+            <a href="#privacy" class="footer__link" data-legal-link="privacy">Privacy</a>
+            <a href="#terms" class="footer__link" data-legal-link="terms">Terms</a>
+            <a href="https://wa.me/201010790594" class="footer__link" target="_blank" rel="noopener">Help</a>
+          </nav>
+        </div>
+      </footer>
+
+    </div>
+    <!-- /app-section -->
+
+    <!-- ───────────────────────────────────────
+           SETTINGS SECTION
+      ─────────────────────────────────────── -->
+    <div id="settings-section" hidden style="display:none">
+
+      <header class="topbar settings-topbar" role="banner">
+        <div class="topbar__inner container">
+          <span class="wordmark topbar__wordmark">Streak</span>
+          <nav class="topbar__nav settings-topbar__nav" aria-label="Settings navigation">
+            <button id="back-to-app-btn" class="btn btn--ghost btn--sm settings-back-btn" type="button">← Back to
+              habits</button>
+          </nav>
+        </div>
+      </header>
+
+      <main class="main container settings-main">
+
+        <section class="page-hero settings-hero">
+          <h2 class="page-title" id="settings-page-title">Account Settings</h2>
+          <p class="page-subtitle" id="settings-page-subtitle">Manage your profile, email, and password.</p>
+        </section>
+
+        <div class="card settings-card settings-card--profile">
+          <h3 class="card__title" id="settings-photo-heading">Profile Photo</h3>
+          <div class="settings-profile-row">
+            <div id="avatar-preview"></div>
+            <div class="settings-upload-copy">
+              <input id="avatar-upload" type="file" accept="image/jpeg,image/png,image/webp" style="display:none" />
+              <label for="avatar-upload" id="avatar-upload-label" class="btn btn--secondary settings-upload-btn">Upload
+                photo</label>
+              <p class="form-hint settings-upload-hint" id="avatar-format-hint">JPG, PNG or WebP · Max 2 MB
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card settings-card">
+          <h3 class="card__title" id="settings-email-heading">Change Email</h3>
+          <div class="form-group settings-form-group">
+            <label class="form-label" for="new-email-input" id="settings-email-label">New email address</label>
+            <input id="new-email-input" class="form-input" type="email" placeholder="new@example.com"
+              autocomplete="email" />
+          </div>
+          <button id="change-email-btn" class="btn btn--primary settings-action-btn">Update email</button>
+        </div>
+
+        <div class="card settings-card">
+          <h3 class="card__title" id="settings-password-heading">Change Password</h3>
+          <div class="form-group settings-form-group">
+            <label class="form-label" for="new-password-input" id="settings-password-label">New password</label>
+            <input id="new-password-input" class="form-input" type="password" placeholder="Min. 8 characters"
+              minlength="8" autocomplete="new-password" />
+          </div>
+          <button id="change-password-btn" class="btn btn--primary settings-action-btn">Update
+            password</button>
+        </div>
+
+      </main>
+    </div>
+
+  </div>
+  <!-- /app -->
+
+  <!-- Reset Password Modal Overlay -->
+  <div id="reset-password-modal" class="reset-password-modal" style="display: none;">
+    <div class="card reset-password-dialog">
+      <h2 id="reset-heading" class="card__title">Set a new password</h2>
+      <div class="form-group">
+        <label class="form-label" for="reset-new-password" id="label-reset-new-password">New Password</label>
+        <input id="reset-new-password" class="form-input" type="password" placeholder="New password (min. 8 chars)"
+          required />
+      </div>
+      <button id="reset-confirm-btn" class="btn btn--primary btn--full" type="button">
+        Save new password
+      </button>
+    </div>
+  </div>
+
+  <div id="legal-modal" class="legal-modal" hidden>
+    <div class="legal-modal__backdrop" data-legal-close></div>
+    <section class="legal-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="legal-modal-title">
+      <button class="legal-modal__close" type="button" data-legal-close aria-label="Close">×</button>
+      <h2 id="legal-modal-title" class="legal-modal__title"></h2>
+      <div id="legal-modal-body" class="legal-modal__body"></div>
+    </section>
+  </div>
+
+  <!-- App script loaded LAST so DOM is fully ready -->
+  <!-- MOTION REMOVED -->
+  <script src="app.js" defer></script>
+
+</body>
+
+</html>
